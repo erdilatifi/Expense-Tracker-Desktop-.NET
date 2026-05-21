@@ -1,0 +1,28 @@
+# Build output
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+.vs/
+
+# SQLite databases
+*.db
+*.db-wal
+*.db-shm
+
+# App settings (contains window position / user prefs)
+appsettings.json
+
+# NuGet
+*.nupkg
+packages/
+.nuget/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
