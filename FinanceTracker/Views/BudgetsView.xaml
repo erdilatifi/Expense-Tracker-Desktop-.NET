@@ -1,0 +1,15 @@
+<UserControl x:Class="FinanceTracker.Views.BudgetsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="20" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Text="Budgets" Foreground="{StaticResource TextPrimaryBrush}" FontSize="28" FontWeight="SemiBold" />
+        <Border Grid.Row="2" Style="{StaticResource BaseCard}">
+            <TextBlock Text="Monthly limits" Foreground="{StaticResource TextMutedBrush}" FontSize="13" />
+        </Border>
+    </Grid>
+</UserControl>

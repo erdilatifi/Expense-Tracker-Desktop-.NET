@@ -1,0 +1,355 @@
+<UserControl x:Class="FinanceTracker.Views.TransactionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:dialogs="clr-namespace:FinanceTracker.Views.Dialogs">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+
+        <Style x:Key="TransactionGridRow" TargetType="{x:Type DataGridRow}">
+            <Setter Property="Height" Value="48" />
+            <Setter Property="Background" Value="{StaticResource CardBgBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource HoverBrush}" />
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{StaticResource AccentPurpleDimBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="TransactionGridCell" TargetType="{x:Type DataGridCell}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <ContentPresenter VerticalAlignment="Center" Margin="10,0" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="TransactionHeaderButton" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="Root" Background="Transparent" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Root" Property="Background" Value="#1A7C3AED" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="Root" Property="Opacity" Value="0.7" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Margin="28,24,28,28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="14" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+
+        <Border Background="{StaticResource CardBgBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="1"
+                CornerRadius="10"
+                Padding="12,10">
+            <WrapPanel VerticalAlignment="Center">
+                <Grid Width="220" Height="36" Margin="0,0,8,6">
+                    <TextBox Style="{StaticResource DarkTextBox}"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                             Padding="34,7,10,7"
+                             Height="36" />
+                    <TextBlock Text="&#xE721;"
+                               FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                               Foreground="{StaticResource TextMutedBrush}"
+                               FontSize="13"
+                               Margin="12,0,0,0"
+                               VerticalAlignment="Center"
+                               IsHitTestVisible="False" />
+                </Grid>
+
+                <DatePicker Width="142"
+                            Style="{StaticResource DarkDatePicker}"
+                            SelectedDate="{Binding FromDate}"
+                            Margin="0,0,8,6" />
+                <DatePicker Width="142"
+                            Style="{StaticResource DarkDatePicker}"
+                            SelectedDate="{Binding ToDate}"
+                            Margin="0,0,8,6" />
+
+                <Grid Width="160" Height="36" Margin="0,0,8,6">
+                    <Button x:Name="CategoryFilterButton"
+                            Content="{Binding SelectedCategoryText}"
+                            Style="{StaticResource DarkButton}"
+                            Height="36"
+                            Padding="12,0"
+                            Click="OnCategoryFilterButtonClick" />
+                    <Popup x:Name="CategoryFilterPopup"
+                           PlacementTarget="{Binding ElementName=CategoryFilterButton}"
+                           Placement="Bottom"
+                           StaysOpen="False"
+                           AllowsTransparency="True">
+                        <Border Width="210"
+                                Margin="0,6,0,0"
+                                Background="{StaticResource SurfaceBrush}"
+                                BorderBrush="{StaticResource BorderSubtleBrush}"
+                                BorderThickness="1"
+                                CornerRadius="10"
+                                Padding="10">
+                            <ItemsControl ItemsSource="{Binding CategoryFilters}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <CheckBox Style="{StaticResource DarkCheckBox}"
+                                                  Margin="0,4"
+                                                  Content="{Binding Name}"
+                                                  IsChecked="{Binding IsSelected}"
+                                                  Click="OnCategoryFilterClicked" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Border>
+                    </Popup>
+                </Grid>
+
+                <ComboBox Width="150"
+                          Style="{StaticResource DarkComboBox}"
+                          ItemsSource="{Binding Accounts}"
+                          SelectedItem="{Binding SelectedAccount}"
+                          DisplayMemberPath="Name"
+                          Height="36"
+                          Margin="0,0,8,6" />
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,8,6">
+                    <Button Content="Income"
+                            Style="{StaticResource PillButton}"
+                            Command="{Binding SetTypeFilterCommand}"
+                            CommandParameter="Income"
+                            Margin="0,0,6,0"
+                            Height="36" />
+                    <Button Content="Expense"
+                            Style="{StaticResource PillButton}"
+                            Command="{Binding SetTypeFilterCommand}"
+                            CommandParameter="Expense"
+                            Margin="0,0,6,0"
+                            Height="36" />
+                    <Button Content="Transfer"
+                            Style="{StaticResource PillButton}"
+                            Command="{Binding SetTypeFilterCommand}"
+                            CommandParameter="Transfer"
+                            Height="36" />
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+                    <Button Style="{StaticResource DarkButton}"
+                            Command="{Binding ExportCsvCommand}"
+                            Height="36"
+                            Margin="0,0,8,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8AD;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Margin="0,0,7,0" />
+                            <TextBlock Text="Export CSV" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource AccentButton}"
+                            Command="{Binding OpenDialogCommand}"
+                            Height="36">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="+" FontWeight="Bold" Margin="0,0,7,0" />
+                            <TextBlock Text="Add transaction" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource DarkButton}"
+                            Command="{Binding DeleteSelectedCommand}"
+                            CommandParameter="{Binding ElementName=TransactionsGrid, Path=SelectedItems}"
+                            Height="36"
+                            Margin="8,0,0,0">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="#EF4444" Margin="0,0,7,0" />
+                            <TextBlock Text="Delete Selected" Foreground="#EF4444" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </WrapPanel>
+        </Border>
+
+        <DataGrid Grid.Row="2"
+                  x:Name="TransactionsGrid"
+                  Style="{StaticResource DarkDataGrid}"
+                  ItemsSource="{Binding Transactions}"
+                  AutoGenerateColumns="False"
+                  HeadersVisibility="Column"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  CanUserResizeRows="False"
+                  CanUserSortColumns="False"
+                  SelectionMode="Extended"
+                  RowHeight="48"
+                  ColumnHeaderHeight="36"
+                  GridLinesVisibility="None"
+                  BorderThickness="0"
+                  Background="Transparent"
+                  RowHeaderWidth="0"
+                  RowStyle="{StaticResource TransactionGridRow}"
+                  CellStyle="{StaticResource TransactionGridCell}">
+            <DataGrid.ColumnHeaderStyle>
+                <Style TargetType="{x:Type DataGridColumnHeader}">
+                    <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+                    <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+                    <Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="Padding" Value="8,0" />
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                </Style>
+            </DataGrid.ColumnHeaderStyle>
+
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Width="*">
+                    <DataGridTemplateColumn.Header>
+                        <Button Content="DESCRIPTION &#x2195;" Style="{StaticResource TransactionHeaderButton}" Command="{Binding DataContext.SortCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="Description" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Description}" FontSize="13" Foreground="{StaticResource TextPrimaryBrush}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="120">
+                    <DataGridTemplateColumn.Header>
+                        <Button Content="CATEGORY &#x2195;" Style="{StaticResource TransactionHeaderButton}" Command="{Binding DataContext.SortCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="Category" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Border Background="{Binding CategoryBadgeBrush}" CornerRadius="10" Padding="8,3" HorizontalAlignment="Left">
+                                <TextBlock Text="{Binding CategoryName}" Foreground="{Binding CategoryBrush}" FontSize="11" FontWeight="SemiBold" />
+                            </Border>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="140">
+                    <DataGridTemplateColumn.Header>
+                        <Button Content="ACCOUNT &#x2195;" Style="{StaticResource TransactionHeaderButton}" Command="{Binding DataContext.SortCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="Account" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding AccountName}" FontSize="12" Foreground="{StaticResource TextMutedBrush}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="90">
+                    <DataGridTemplateColumn.Header>
+                        <Button Content="DATE &#x2195;" Style="{StaticResource TransactionHeaderButton}" Command="{Binding DataContext.SortCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="Date" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding DateText}" FontSize="12" Foreground="{StaticResource TextMutedBrush}" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="90">
+                    <DataGridTemplateColumn.Header>
+                        <Button Content="AMOUNT &#x2195;" Style="{StaticResource TransactionHeaderButton}" HorizontalContentAlignment="Right" Command="{Binding DataContext.SortCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="Amount" />
+                    </DataGridTemplateColumn.Header>
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding AmountText}" Foreground="{Binding AmountBrush}" FontSize="13" FontWeight="Bold" HorizontalAlignment="Right" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="90" Header="SPEND">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <ItemsControl ItemsSource="{Binding SpendSegments}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="20" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Rectangle Width="3" Height="10" RadiusX="1" RadiusY="1" Fill="{Binding Fill}" Margin="0,0,1,0" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Width="110" Header="ACTIONS">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <!-- Edit Button -->
+                                <Button Style="{StaticResource TransactionHeaderButton}"
+                                        Command="{Binding DataContext.EditTransactionCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}"
+                                        ToolTip="Edit transaction"
+                                        Margin="0,0,10,0">
+                                    <TextBlock Text="&#xE70F;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="13" Foreground="{StaticResource TextMutedBrush}" />
+                                </Button>
+                                <!-- Duplicate Button -->
+                                <Button Style="{StaticResource TransactionHeaderButton}"
+                                        Command="{Binding DataContext.DuplicateTransactionCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}"
+                                        ToolTip="Duplicate transaction"
+                                        Margin="0,0,10,0">
+                                    <TextBlock Text="&#xE8C8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="13" Foreground="{StaticResource TextMutedBrush}" />
+                                </Button>
+                                <!-- Delete Button -->
+                                <Button Style="{StaticResource TransactionHeaderButton}"
+                                        Command="{Binding DataContext.DeleteTransactionCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                        CommandParameter="{Binding}"
+                                        ToolTip="Delete transaction">
+                                    <TextBlock Text="&#xE74D;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="13" Foreground="#EF4444" />
+                                </Button>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <Grid Grid.Row="4">
+            <TextBlock Text="{Binding PaginationText}"
+                       Foreground="{StaticResource TextMutedBrush}"
+                       FontSize="12"
+                       VerticalAlignment="Center" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="Prev" Style="{StaticResource DarkButton}" Command="{Binding PreviousPageCommand}" Margin="0,0,8,0" />
+                <Button Content="Next" Style="{StaticResource DarkButton}" Command="{Binding NextPageCommand}" />
+            </StackPanel>
+        </Grid>
+
+        <dialogs:AddTransactionDialog Grid.RowSpan="5"
+                                      Panel.ZIndex="100"
+                                      Visibility="{Binding IsDialogOpen, Converter={StaticResource BooleanToVisibilityConverter}}" />
+    </Grid>
+</UserControl>

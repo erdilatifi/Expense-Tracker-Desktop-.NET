@@ -1,0 +1,233 @@
+<UserControl x:Class="FinanceTracker.Views.Dialogs.AddTransactionDialog"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Focusable="True"
+             KeyDown="OnDialogKeyDown"
+             Loaded="OnDialogLoaded">
+    <UserControl.Resources>
+        <Style x:Key="AmountTextBox" TargetType="{x:Type TextBox}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="CaretBrush" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderSubtleBrush}" />
+            <Setter Property="BorderThickness" Value="0,0,0,1" />
+            <Setter Property="Padding" Value="0,0,0,6" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Style.Triggers>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource AccentPurpleBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="#8C000000"
+          MouseDown="OnOverlayMouseDown">
+        <Border Width="480"
+                Background="{StaticResource CardBgBrush}"
+                CornerRadius="16"
+                Padding="24"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                MouseDown="OnCardMouseDown">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="18" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="12" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="16" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <Grid>
+                    <TextBlock Foreground="{StaticResource TextPrimaryBrush}"
+                               FontSize="16"
+                               FontWeight="SemiBold">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="Text" Value="Add transaction" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsEditing}" Value="True">
+                                        <Setter Property="Text" Value="Edit transaction" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <Button Content="&#xE711;"
+                            FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                            Width="30"
+                            Height="30"
+                            Padding="0"
+                            HorizontalAlignment="Right"
+                            Style="{StaticResource DarkButton}"
+                            Command="{Binding CloseDialogCommand}" />
+                </Grid>
+
+                <StackPanel Grid.Row="2">
+                    <TextBox x:Name="AmountBox"
+                             Text="{Binding AmountText, UpdateSourceTrigger=PropertyChanged}"
+                             Height="46"
+                             FontSize="28"
+                             FontWeight="SemiBold"
+                             Style="{StaticResource AmountTextBox}"
+                             LostFocus="OnAmountLostFocus" />
+                    <TextBlock Text="{Binding AmountError}" Foreground="{StaticResource AccentPurpleHoverBrush}" FontSize="11" Margin="0,4,0,0" />
+                </StackPanel>
+
+                <UniformGrid Grid.Row="4" Columns="3" Margin="-5,0">
+                    <Button Content="Income" Margin="5,0" Style="{StaticResource PillButton}" Command="{Binding SetNewTransactionTypeCommand}" CommandParameter="Income" />
+                    <Button Content="Expense" Margin="5,0" Style="{StaticResource PillButton}" Command="{Binding SetNewTransactionTypeCommand}" CommandParameter="Expense" />
+                    <Button Content="Transfer" Margin="5,0" Style="{StaticResource PillButton}" Command="{Binding SetNewTransactionTypeCommand}" CommandParameter="Transfer" />
+                </UniformGrid>
+
+                <Grid Grid.Row="6">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.ColumnSpan="3">
+                        <TextBox Style="{StaticResource DarkTextBox}"
+                                 Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}"
+                                 Height="38" />
+                        <TextBlock Text="{Binding DescriptionError}" Foreground="{StaticResource AccentPurpleHoverBrush}" FontSize="11" Margin="0,4,0,0" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2">
+                        <DatePicker Style="{StaticResource DarkDatePicker}"
+                                    SelectedDate="{Binding TransactionDate}" />
+                        <TextBlock Text="{Binding DateError}" Foreground="{StaticResource AccentPurpleHoverBrush}" FontSize="11" Margin="0,4,0,0" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="2" Grid.Column="2">
+                        <ComboBox Style="{StaticResource DarkComboBox}"
+                                  ItemsSource="{Binding Categories}"
+                                  SelectedItem="{Binding SelectedDialogCategory}"
+                                  Height="38">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <StackPanel Orientation="Horizontal">
+                                        <Ellipse Width="8" Height="8" Fill="{Binding ColorBrush}" VerticalAlignment="Center" />
+                                        <TextBlock Text="{Binding Name}" Margin="8,0,0,0" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBlock Text="{Binding CategoryError}" Foreground="{StaticResource AccentPurpleHoverBrush}" FontSize="11" Margin="0,4,0,0" />
+                    </StackPanel>
+
+                    <!-- Single Account Selector (when not a transfer) -->
+                    <StackPanel Grid.Row="4" Grid.ColumnSpan="3"
+                                Visibility="{Binding IsNotTransfer, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock Text="Account" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
+                        <ComboBox Style="{StaticResource DarkComboBox}"
+                                  ItemsSource="{Binding Accounts}"
+                                  SelectedItem="{Binding SelectedDialogAccount}"
+                                  DisplayMemberPath="Name"
+                                  Height="38" />
+                        <TextBlock Text="{Binding AccountError}" Foreground="{StaticResource AccentPurpleHoverBrush}" FontSize="11" Margin="0,4,0,0" />
+                    </StackPanel>
+
+                    <!-- Double Account Selector (when transfer) -->
+                    <Grid Grid.Row="4" Grid.ColumnSpan="3"
+                          Visibility="{Binding IsTransfer, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="12" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <TextBlock Text="From Account" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
+                            <ComboBox Style="{StaticResource DarkComboBox}"
+                                      ItemsSource="{Binding Accounts}"
+                                      SelectedItem="{Binding SelectedDialogAccount}"
+                                      DisplayMemberPath="Name"
+                                      Height="38" />
+                            <TextBlock Text="{Binding AccountError}" Foreground="{StaticResource AccentPurpleHoverBrush}" FontSize="11" Margin="0,4,0,0" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="To Account" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
+                            <ComboBox Style="{StaticResource DarkComboBox}"
+                                      ItemsSource="{Binding Accounts}"
+                                      SelectedItem="{Binding SelectedDialogTargetAccount}"
+                                      DisplayMemberPath="Name"
+                                      Height="38" />
+                            <TextBlock Text="{Binding TargetAccountError}" Foreground="{StaticResource AccentPurpleHoverBrush}" FontSize="11" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </Grid>
+
+                    <TextBox Grid.Row="6"
+                             Grid.ColumnSpan="3"
+                             Style="{StaticResource DarkTextBox}"
+                             Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}"
+                             Height="92"
+                             AcceptsReturn="True"
+                             TextWrapping="Wrap"
+                             VerticalScrollBarVisibility="Auto" />
+
+                    <StackPanel Grid.Row="8" Grid.ColumnSpan="3">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,14">
+                            <Button Content="Attach receipt"
+                                    Style="{StaticResource DarkButton}"
+                                    Command="{Binding AttachReceiptCommand}"
+                                    Height="32"
+                                    Margin="0,0,8,0" />
+                            <TextBlock Text="{Binding ReceiptPath}"
+                                       Foreground="{StaticResource TextMutedBrush}"
+                                       FontSize="11"
+                                       VerticalAlignment="Center"
+                                       TextTrimming="CharacterEllipsis"
+                                       MaxWidth="260" />
+                        </StackPanel>
+                        <CheckBox Content="Recurring transaction"
+                                  IsChecked="{Binding IsRecurring}"
+                                  Style="{StaticResource DarkCheckBox}"
+                                  Margin="0,0,0,0" />
+                        <StackPanel Margin="0,12,0,0"
+                                    Visibility="{Binding IsRecurring, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="Frequency" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,0,0,4" />
+                            <ComboBox Style="{StaticResource DarkComboBox}"
+                                      ItemsSource="{Binding RecurrenceFrequencies}"
+                                      SelectedItem="{Binding SelectedRecurrenceFrequency}"
+                                      Height="36" />
+                        </StackPanel>
+                    </StackPanel>
+
+                </Grid>
+
+                <Grid Grid.Row="7" Margin="0,22,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="130" />
+                        <ColumnDefinition Width="12" />
+                        <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <Button Content="Cancel"
+                            Height="40"
+                            Style="{StaticResource DarkButton}"
+                            Command="{Binding CloseDialogCommand}" />
+                    <Button Grid.Column="2"
+                            Content="Save"
+                            Height="40"
+                            Style="{StaticResource AccentButton}"
+                            Command="{Binding SaveCommand}" />
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

@@ -1,0 +1,339 @@
+<UserControl x:Class="FinanceTracker.Views.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:behaviors="clr-namespace:FinanceTracker.Behaviors"
+             xmlns:controls="clr-namespace:FinanceTracker.Controls"
+             xmlns:converters="clr-namespace:FinanceTracker.Converters"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF">
+    <UserControl.Resources>
+        <converters:VisibilityConverter x:Key="VisibilityConverter" />
+
+        <Style x:Key="DashboardCard" TargetType="{x:Type Border}" BasedOn="{StaticResource BaseCard}">
+            <Setter Property="Padding" Value="14" />
+            <Setter Property="CornerRadius" Value="10" />
+        </Style>
+
+        <Style x:Key="GhostToolbarButton" TargetType="{x:Type Button}" BasedOn="{StaticResource DarkButton}">
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Padding" Value="10,0" />
+            <Setter Property="FontSize" Value="12" />
+        </Style>
+
+        <Style x:Key="CategoryProgressBar" TargetType="{x:Type ProgressBar}">
+            <Setter Property="Height" Value="7" />
+            <Setter Property="Background" Value="{StaticResource BorderSubtleBrush}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ProgressBar}">
+                        <Grid ClipToBounds="True">
+                            <Border x:Name="PART_Track"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="4" />
+                            <Border x:Name="PART_Indicator"
+                                    HorizontalAlignment="Left"
+                                    Background="{TemplateBinding Foreground}"
+                                    CornerRadius="4" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="28,24,28,28">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="56" />
+                <RowDefinition Height="16" />
+                <RowDefinition Height="148" />
+                <RowDefinition Height="18" />
+                <RowDefinition Height="290" />
+                <RowDefinition Height="18" />
+                <RowDefinition Height="220" />
+                <RowDefinition Height="18" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel>
+                    <TextBlock Text="Dashboard"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               FontSize="20"
+                               FontWeight="SemiBold" />
+                    <TextBlock Text="Cashflow, budgets, and recent activity"
+                               Foreground="{StaticResource TextMutedBrush}"
+                               FontSize="12"
+                               Margin="0,4,0,0" />
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Style="{StaticResource GhostToolbarButton}" Margin="0,0,8,0"
+                            Command="{Binding DataContext.NavigateToCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                            CommandParameter="Reports">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE9D2;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Margin="0,0,6,0" />
+                            <TextBlock Text="View reports" />
+                        </StackPanel>
+                    </Button>
+                    <Button Style="{StaticResource AccentButton}" Height="32" Padding="12,0"
+                            Command="{Binding DataContext.OpenAddTransactionCommand, RelativeSource={RelativeSource AncestorType=Window}}">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="+" FontWeight="Bold" Margin="0,0,6,0" />
+                            <TextBlock Text="Add transaction" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
+
+            <UniformGrid Grid.Row="2" Columns="4" Margin="-7,0">
+                <Border Style="{StaticResource DashboardCard}" Margin="7,0"
+                        BorderBrush="{StaticResource AccentPurpleBrush}" BorderThickness="0,2,0,0">
+                    <Grid>
+                        <StackPanel Visibility="{Binding IsLoading, Converter={StaticResource VisibilityConverter}, ConverterParameter=Invert}">
+                            <Border Width="32" Height="32" CornerRadius="8" Background="{StaticResource AccentPurpleDimBrush}" HorizontalAlignment="Left">
+                                <TextBlock Text="&#xE8D4;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{StaticResource AccentPurpleBrush}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <TextBlock Text="Total balance" Foreground="{StaticResource TextMutedBrush}" FontSize="12" Margin="0,14,0,4" />
+                            <TextBlock FontSize="22"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       behaviors:AnimatedNumber.Value="{Binding TotalBalance}"
+                                       behaviors:AnimatedNumber.Format="C2" />
+                            <TextBlock Text="{Binding BalanceDeltaText}" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,4,0,0" />
+                        </StackPanel>
+                        <StackPanel Visibility="{Binding IsLoading, Converter={StaticResource VisibilityConverter}}">
+                            <controls:ShimmerRectangle Height="32" Width="32" HorizontalAlignment="Left" />
+                            <controls:ShimmerRectangle Height="12" Width="92" HorizontalAlignment="Left" Margin="0,14,0,0" />
+                            <controls:ShimmerRectangle Height="24" Margin="0,8,0,0" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Style="{StaticResource DashboardCard}" Margin="7,0">
+                    <StackPanel>
+                        <Border Width="32" Height="32" CornerRadius="8" Background="{StaticResource AccentPurpleDimBrush}" HorizontalAlignment="Left">
+                            <TextBlock Text="&#xE8C7;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{StaticResource AccentPurpleBrush}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="Monthly income" Foreground="{StaticResource TextMutedBrush}" FontSize="12" Margin="0,14,0,4" />
+                        <TextBlock FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   behaviors:AnimatedNumber.Value="{Binding MonthlyIncome}"
+                                   behaviors:AnimatedNumber.Format="C2" />
+                        <TextBlock Text="{Binding IncomeDeltaText}" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource DashboardCard}" Margin="7,0">
+                    <StackPanel>
+                        <Border Width="32" Height="32" CornerRadius="8" Background="#221830" HorizontalAlignment="Left">
+                            <TextBlock Text="&#xE8A5;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="#A78BFA" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Text="Monthly expenses" Foreground="{StaticResource TextMutedBrush}" FontSize="12" Margin="0,14,0,4" />
+                        <TextBlock FontSize="22"
+                                   FontWeight="Bold"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   behaviors:AnimatedNumber.Value="{Binding MonthlyExpenses}"
+                                   behaviors:AnimatedNumber.Format="C2" />
+                        <TextBlock Text="{Binding ExpensesDeltaText}" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,4,0,0" />
+                    </StackPanel>
+                </Border>
+
+                <Border Style="{StaticResource DashboardCard}" Margin="7,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition Width="58" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                            <Border Width="32" Height="32" CornerRadius="8" Background="{StaticResource AccentPurpleDimBrush}" HorizontalAlignment="Left">
+                                <TextBlock Text="&#xE9D2;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Foreground="{StaticResource AccentPurpleBrush}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
+                            <TextBlock Text="Savings rate" Foreground="{StaticResource TextMutedBrush}" FontSize="12" Margin="0,14,0,4" />
+                            <TextBlock FontSize="22"
+                                       FontWeight="Bold"
+                                       Foreground="{StaticResource AccentPurpleBrush}"
+                                       behaviors:AnimatedNumber.Value="{Binding SavingsRate}"
+                                       behaviors:AnimatedNumber.Format="P0" />
+                            <TextBlock Text="{Binding SavingsDeltaText}" Foreground="{StaticResource TextMutedBrush}" FontSize="11" Margin="0,4,0,0" />
+                        </StackPanel>
+                        <lvc:PieChart Grid.Column="1"
+                                      Width="54"
+                                      Height="54"
+                                      Series="{Binding SavingsRateSeries}"
+                                      LegendPosition="Hidden"
+                                      TooltipPosition="Hidden"
+                                      InitialRotation="-90"
+                                      MaxAngle="360"
+                                      MinValue="0"
+                                      MaxValue="100"
+                                      AnimationsSpeed="00:00:00.800"
+                                      Background="Transparent"
+                                      IsHitTestVisible="False"
+                                      VerticalAlignment="Center" />
+                    </Grid>
+                </Border>
+            </UniformGrid>
+
+            <Grid Grid.Row="4">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="58*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="42*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Style="{StaticResource DashboardCard}">
+                    <Grid>
+                        <Grid Visibility="{Binding IsLoading, Converter={StaticResource VisibilityConverter}, ConverterParameter=Invert}">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <Grid>
+                                <TextBlock Text="Analytic"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           FontSize="14"
+                                           FontWeight="SemiBold" />
+                            </Grid>
+                            <lvc:CartesianChart Grid.Row="1"
+                                                Series="{Binding CashflowSeries}"
+                                                XAxes="{Binding CashflowXAxes}"
+                                                YAxes="{Binding CashflowYAxes}"
+                                                LegendPosition="Hidden"
+                                                TooltipFindingStrategy="CompareOnlyX"
+                                                TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
+                                                TooltipTextPaint="{Binding TooltipTextPaint}"
+                                                TooltipTextSize="12"
+                                                AnimationsSpeed="00:00:00.800"
+                                                Background="Transparent"
+                                                Margin="0,12,0,0" />
+                        </Grid>
+                        <StackPanel Visibility="{Binding IsLoading, Converter={StaticResource VisibilityConverter}}">
+                            <controls:ShimmerRectangle Height="16" Width="90" HorizontalAlignment="Left" />
+                            <controls:ShimmerRectangle Height="210" Margin="0,16,0,0" />
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="2" Style="{StaticResource DashboardCard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Spending by category"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   FontSize="14"
+                                   FontWeight="SemiBold" />
+                        <ItemsControl Grid.Row="1" ItemsSource="{Binding CategoryLegend}" Margin="0,14,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Height="40">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="28" />
+                                            <ColumnDefinition Width="100" />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="46" />
+                                        </Grid.ColumnDefinitions>
+                                        <Rectangle Width="10" Height="10" RadiusX="2" RadiusY="2" Fill="{Binding ColorHex}" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Name}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="12" VerticalAlignment="Center" />
+                                        <ProgressBar Grid.Column="2"
+                                                     Style="{StaticResource CategoryProgressBar}"
+                                                     Maximum="100"
+                                                     Value="{Binding PercentValue}"
+                                                     Background="{StaticResource BorderSubtleBrush}"
+                                                     Foreground="{Binding ColorHex}"
+                                                     VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="3" Text="{Binding Percentage}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="11" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="6" Style="{StaticResource DashboardCard}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Net worth trend"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               FontSize="14"
+                               FontWeight="SemiBold" />
+                    <lvc:CartesianChart Grid.Row="1"
+                                        Series="{Binding NetWorthSeries}"
+                                        XAxes="{Binding NetWorthXAxes}"
+                                        YAxes="{Binding NetWorthYAxes}"
+                                        LegendPosition="Hidden"
+                                        TooltipBackgroundPaint="{Binding TooltipBackgroundPaint}"
+                                        TooltipTextPaint="{Binding TooltipTextPaint}"
+                                        AnimationsSpeed="00:00:00.800"
+                                        Background="Transparent"
+                                        Margin="0,10,0,0" />
+                </Grid>
+            </Border>
+
+            <Border Grid.Row="8" Style="{StaticResource DashboardCard}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <Grid>
+                        <TextBlock Text="Transaction History"
+                                   Foreground="{StaticResource TextPrimaryBrush}"
+                                   FontSize="14"
+                                   FontWeight="SemiBold" />
+                        <Button Content="View all"
+                                Style="{StaticResource AccentButton}"
+                                Height="30"
+                                Padding="12,0"
+                                HorizontalAlignment="Right"
+                                Command="{Binding DataContext.NavigateToCommand, RelativeSource={RelativeSource AncestorType=Window}}"
+                                CommandParameter="Transactions" />
+                    </Grid>
+
+                    <ItemsControl Grid.Row="2" ItemsSource="{Binding RecentTransactions}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Height="42"
+                                        CornerRadius="8"
+                                        Background="{Binding RowBackground}"
+                                        Padding="10,5">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="34" />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="116" />
+                                            <ColumnDefinition Width="92" />
+                                            <ColumnDefinition Width="118" />
+                                        </Grid.ColumnDefinitions>
+                                        <Border Width="3" Background="{Binding CategoryColor}" CornerRadius="2" Margin="2,6" />
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Description}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="12" />
+                                            <TextBlock Text="{Binding CategoryName}" Foreground="{StaticResource TextMutedBrush}" FontSize="10" />
+                                        </StackPanel>
+                                        <TextBlock Grid.Column="2" Text="{Binding DateText}" Foreground="{StaticResource TextMutedBrush}" FontSize="11" VerticalAlignment="Center" />
+                                        <Border Grid.Column="3" Background="{Binding TypeBg}" CornerRadius="10" Padding="8,2" HorizontalAlignment="Left" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding TypeLabel}" Foreground="{Binding TypeFg}" FontSize="10" />
+                                        </Border>
+                                        <TextBlock Grid.Column="4" Text="{Binding AmountText}" Foreground="{Binding AmountColor}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>

@@ -1,0 +1,14 @@
+C:\Users\Admin\Desktop\new\obj\Debug\net8.0\FinanceTrackerLauncher.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Admin\Desktop\new\obj\Debug\net8.0\FinanceTrackerLauncher.AssemblyInfoInputs.cache
+C:\Users\Admin\Desktop\new\obj\Debug\net8.0\FinanceTrackerLauncher.AssemblyInfo.cs
+C:\Users\Admin\Desktop\new\obj\Debug\net8.0\FinanceTrackerLauncher.csproj.CoreCompileInputs.cache
+C:\Users\Admin\Desktop\new\bin\Debug\net8.0\FinanceTrackerLauncher.exe
+C:\Users\Admin\Desktop\new\bin\Debug\net8.0\FinanceTrackerLauncher.deps.json
+C:\Users\Admin\Desktop\new\bin\Debug\net8.0\FinanceTrackerLauncher.runtimeconfig.json
+C:\Users\Admin\Desktop\new\bin\Debug\net8.0\FinanceTrackerLauncher.dll
+C:\Users\Admin\Desktop\new\bin\Debug\net8.0\FinanceTrackerLauncher.pdb
+C:\Users\Admin\Desktop\new\obj\Debug\net8.0\FinanceTrackerLauncher.dll
+C:\Users\Admin\Desktop\new\obj\Debug\net8.0\refint\FinanceTrackerLauncher.dll
+C:\Users\Admin\Desktop\new\obj\Debug\net8.0\FinanceTrackerLauncher.pdb
+C:\Users\Admin\Desktop\new\obj\Debug\net8.0\FinanceTrackerLauncher.genruntimeconfig.cache
+C:\Users\Admin\Desktop\new\obj\Debug\net8.0\ref\FinanceTrackerLauncher.dll

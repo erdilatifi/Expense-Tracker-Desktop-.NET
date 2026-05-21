@@ -1,0 +1,79 @@
+<UserControl x:Class="FinanceTracker.Views.RecurringView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Margin="28,24,28,28">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="18" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <StackPanel>
+            <TextBlock Text="Recurring"
+                       Foreground="{StaticResource TextPrimaryBrush}"
+                       FontSize="20"
+                       FontWeight="SemiBold" />
+            <TextBlock Text="Upcoming transactions in the next 30 days"
+                       Foreground="{StaticResource TextMutedBrush}"
+                       FontSize="13"
+                       Margin="0,4,0,0" />
+        </StackPanel>
+        <Border Grid.Row="2" Style="{StaticResource BaseCard}" Padding="0">
+            <DataGrid ItemsSource="{Binding UpcomingItems}"
+                      Style="{StaticResource DarkDataGrid}"
+                      AutoGenerateColumns="False"
+                      HeadersVisibility="Column"
+                      CanUserAddRows="False"
+                      RowHeight="52">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="NEXT" Binding="{Binding NextOccurrenceText}" Width="110" />
+                    <DataGridTextColumn Header="DESCRIPTION" Binding="{Binding Description}" Width="*" />
+                    <DataGridTextColumn Header="CATEGORY" Binding="{Binding CategoryName}" Width="120" />
+                    <DataGridTextColumn Header="ACCOUNT" Binding="{Binding AccountName}" Width="110" />
+                    <DataGridTextColumn Header="FREQ" Binding="{Binding Frequency}" Width="80" />
+                    <DataGridTextColumn Header="AMOUNT" Binding="{Binding AmountText}" Width="100" />
+                    <DataGridTemplateColumn Header="ACTIONS" Width="220">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Style="{StaticResource DarkButton}"
+                                            Padding="8,4"
+                                            Margin="0,0,6,0"
+                                            IsEnabled="{Binding IsFromDb}"
+                                            Command="{Binding DataContext.TogglePauseCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}">
+                                        <TextBlock>
+                                            <TextBlock.Style>
+                                                <Style TargetType="TextBlock">
+                                                    <Setter Property="Text" Value="Pause" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsPaused}" Value="True">
+                                                            <Setter Property="Text" Value="Resume" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBlock.Style>
+                                        </TextBlock>
+                                    </Button>
+                                    <Button Content="Skip"
+                                            Style="{StaticResource DarkButton}"
+                                            Padding="8,4"
+                                            Margin="0,0,6,0"
+                                            IsEnabled="{Binding IsFromDb}"
+                                            Command="{Binding DataContext.SkipNextCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}" />
+                                    <Button Content="Remove"
+                                            Style="{StaticResource DarkButton}"
+                                            Padding="8,4"
+                                            Foreground="#EF4444"
+                                            IsEnabled="{Binding IsFromDb}"
+                                            Command="{Binding DataContext.DeleteRuleCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}" />
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+    </Grid>
+</UserControl>

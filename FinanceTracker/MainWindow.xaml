@@ -1,0 +1,261 @@
+<Window x:Class="FinanceTracker.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:shell="clr-namespace:System.Windows.Shell;assembly=PresentationFramework"
+        xmlns:converters="clr-namespace:FinanceTracker.Converters"
+        xmlns:viewModels="clr-namespace:FinanceTracker.ViewModels"
+        xmlns:views="clr-namespace:FinanceTracker.Views"
+        mc:Ignorable="d"
+        Title="FinanceTracker"
+        Width="1200"
+        Height="780"
+        MinWidth="960"
+        MinHeight="640"
+        WindowStyle="SingleBorderWindow"
+        ResizeMode="CanResize"
+        AllowsTransparency="False"
+        Background="{StaticResource AppBgBrush}"
+        FontSize="13">
+    <Window.Resources>
+        <converters:VisibilityConverter x:Key="VisibilityConverter" />
+
+        <DataTemplate DataType="{x:Type viewModels:DashboardViewModel}">
+            <views:DashboardView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:TransactionsViewModel}">
+            <views:TransactionsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:RecurringViewModel}">
+            <views:RecurringView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:BudgetViewModel}">
+            <views:BudgetView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:ReportsViewModel}">
+            <views:ReportsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:AccountsViewModel}">
+            <views:AccountsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:SettingsViewModel}">
+            <views:SettingsView />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Background="{StaticResource CardBgBrush}"
+                BorderBrush="{StaticResource BorderSubtleBrush}"
+                BorderThickness="0,0,1,0">
+            <Grid Margin="14,20,14,14">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="24" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <StackPanel Orientation="Horizontal" Height="40" VerticalAlignment="Top">
+                    <Border Width="30"
+                            Height="30"
+                            CornerRadius="8"
+                            Background="{StaticResource AccentPurpleBrush}"
+                            VerticalAlignment="Center">
+                        <TextBlock Text="&#xE825;"
+                                   FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   Foreground="{StaticResource WhiteBrush}"
+                                   FontSize="14"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center" />
+                    </Border>
+                    <TextBlock Text="FinanceTracker"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               VerticalAlignment="Center"
+                               Margin="10,0,0,0" />
+                </StackPanel>
+
+                <Rectangle x:Name="DragHandle"
+                           Grid.Row="1"
+                           Height="24"
+                           Fill="Transparent"
+                           MouseLeftButtonDown="OnDragHandleMouseLeftButtonDown"
+                           shell:WindowChrome.IsHitTestVisibleInChrome="True" />
+
+                <ListBox x:Name="NavList"
+                         Grid.Row="2"
+                         Background="Transparent"
+                         BorderThickness="0"
+                         Padding="0"
+                         SelectedIndex="0"
+                         ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                         ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                         SelectionChanged="OnNavigationSelectionChanged"
+                         ItemContainerStyle="{StaticResource SidebarItem}">
+                    <ListBoxItem Tag="Dashboard">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE80F;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Width="24" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                            <TextBlock Text="Dashboard" FontSize="13" VerticalAlignment="Center" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Tag="Transactions">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8C8;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Width="24" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                            <TextBlock Text="Transactions" FontSize="13" VerticalAlignment="Center" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Tag="Recurring">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE823;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Width="24" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                            <TextBlock Text="Recurring" FontSize="13" VerticalAlignment="Center" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Tag="Budgets">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8C7;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Width="24" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                            <TextBlock Text="Budgets" FontSize="13" VerticalAlignment="Center" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Tag="Reports">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE9D2;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Width="24" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                            <TextBlock Text="Reports" FontSize="13" VerticalAlignment="Center" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Tag="Accounts">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE8D4;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Width="24" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                            <TextBlock Text="Accounts" FontSize="13" VerticalAlignment="Center" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                        </StackPanel>
+                    </ListBoxItem>
+                    <ListBoxItem Tag="Settings">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="&#xE713;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="16" Width="24" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                            <TextBlock Text="Settings" FontSize="13" VerticalAlignment="Center" Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType=ListBoxItem}}" />
+                        </StackPanel>
+                    </ListBoxItem>
+                </ListBox>
+
+                <StackPanel Grid.Row="4">
+                    <Button x:Name="NotificationButton"
+                            Height="38"
+                            Padding="10,0"
+                            Style="{StaticResource DarkButton}"
+                            Click="OnNotificationButtonClick">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="24" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="&#xE7F4;"
+                                       FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                       FontSize="15"
+                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Grid.Column="1"
+                                       Text="Alerts"
+                                       Foreground="{StaticResource TextPrimaryBrush}"
+                                       FontSize="12"
+                                       VerticalAlignment="Center" />
+                            <Border Grid.Column="2"
+                                    MinWidth="18"
+                                    Height="18"
+                                    CornerRadius="9"
+                                    Background="{StaticResource AccentPinkBrush}"
+                                    Visibility="{Binding NotificationService.NotificationCount, Converter={StaticResource VisibilityConverter}}">
+                                <TextBlock Text="{Binding NotificationService.NotificationCount}"
+                                           Foreground="{StaticResource WhiteBrush}"
+                                           FontSize="10"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center"
+                                           Margin="5,0" />
+                            </Border>
+                        </Grid>
+                    </Button>
+
+                    <Popup x:Name="NotificationPopup"
+                           PlacementTarget="{Binding ElementName=NotificationButton}"
+                           Placement="Right"
+                           StaysOpen="False"
+                           AllowsTransparency="True">
+                        <Border Width="320"
+                                Margin="10,0,0,0"
+                                Background="{StaticResource SurfaceBrush}"
+                                BorderBrush="{StaticResource BorderSubtleBrush}"
+                                BorderThickness="1"
+                                CornerRadius="12"
+                                Padding="14">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="12" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <Grid>
+                                    <TextBlock Text="Notifications"
+                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                               FontSize="14"
+                                               FontWeight="SemiBold" />
+                                    <Button Content="Clear all"
+                                            HorizontalAlignment="Right"
+                                            Padding="0"
+                                            BorderThickness="0"
+                                            Background="Transparent"
+                                            Foreground="{StaticResource AccentPurpleBrush}"
+                                            Click="OnClearNotificationsClick" />
+                                </Grid>
+                                <ItemsControl Grid.Row="2"
+                                              ItemsSource="{Binding NotificationService.Notifications}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,0,0,12">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="30" />
+                                                    <ColumnDefinition />
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="{Binding Icon}"
+                                                           FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                           FontSize="15"
+                                                           Foreground="{Binding AccentHex}"
+                                                           VerticalAlignment="Top" />
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Text="{Binding Title}"
+                                                               Foreground="{StaticResource TextPrimaryBrush}"
+                                                               FontSize="13"
+                                                               TextWrapping="Wrap" />
+                                                    <TextBlock Text="{Binding TimeAgo}"
+                                                               Foreground="{StaticResource TextMutedBrush}"
+                                                               FontSize="11"
+                                                               Margin="0,3,0,0" />
+                                                </StackPanel>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </Grid>
+                        </Border>
+                    </Popup>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <ContentControl x:Name="ContentHost"
+                        Grid.Column="1"
+                        Background="{StaticResource AppBgBrush}">
+            <ContentControl.RenderTransform>
+                <TranslateTransform />
+            </ContentControl.RenderTransform>
+        </ContentControl>
+
+    </Grid>
+</Window>

@@ -1,0 +1,363 @@
+<UserControl x:Class="FinanceTracker.Views.ReportsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.WPF;assembly=LiveChartsCore.SkiaSharpView.WPF">
+    <UserControl.Resources>
+        <Style x:Key="ReportGridRow" TargetType="{x:Type DataGridRow}">
+            <Setter Property="Height" Value="46" />
+            <Setter Property="Background" Value="{StaticResource CardBgBrush}" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource HoverBrush}" />
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{StaticResource AccentPurpleDimBrush}" />
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="ReportGridCell" TargetType="{x:Type DataGridCell}">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type DataGridCell}">
+                        <ContentPresenter VerticalAlignment="Center" Margin="8,0" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </UserControl.Resources>
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <Grid Margin="28,24,28,28">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="14" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="16" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="18" />
+                <RowDefinition Height="300" />
+                <RowDefinition Height="18" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <Grid>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Reports"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               FontSize="16"
+                               FontWeight="SemiBold" />
+                    <TextBlock Text="Spend, activity, and review queues"
+                               Foreground="{StaticResource TextMutedBrush}"
+                               FontSize="13"
+                               Margin="0,4,0,0" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Content="Export all CSV" Style="{StaticResource DarkButton}" Command="{Binding ExportAllTransactionsCsvCommand}" Height="36" Margin="0,0,8,0" />
+                    <Button Content="Export PDF" Style="{StaticResource AccentButton}" Command="{Binding ExportPdfCommand}" Height="36" />
+                </StackPanel>
+            </Grid>
+
+            <Border Grid.Row="4" Style="{StaticResource BaseCard}" Padding="16">
+                <StackPanel>
+                    <TextBlock Text="Period summary" Foreground="{StaticResource TextPrimaryBrush}" FontSize="14" FontWeight="SemiBold" Margin="0,0,0,10" />
+                    <WrapPanel Margin="0,0,0,12">
+                        <TextBlock Text="{Binding AverageDailySpendText}" Foreground="{StaticResource TextMutedBrush}" FontSize="12" Margin="0,0,20,8" />
+                        <TextBlock Text="{Binding ForecastText}" Foreground="{StaticResource TextMutedBrush}" FontSize="12" Margin="0,0,20,8" />
+                        <TextBlock Text="{Binding YearOverYearText}" Foreground="{StaticResource TextMutedBrush}" FontSize="12" Margin="0,0,0,8" />
+                    </WrapPanel>
+                    <DataGrid ItemsSource="{Binding MonthSummaryRows}" Style="{StaticResource DarkDataGrid}" AutoGenerateColumns="False" MaxHeight="160">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="Month" Binding="{Binding Month}" Width="*" />
+                            <DataGridTextColumn Header="Income" Binding="{Binding Income}" Width="110" />
+                            <DataGridTextColumn Header="Expenses" Binding="{Binding Expenses}" Width="110" />
+                            <DataGridTextColumn Header="Savings" Binding="{Binding Savings}" Width="110" />
+                            <DataGridTextColumn Header="Savings %" Binding="{Binding SavingsPercent}" Width="90" />
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Row="2"
+                    Background="{StaticResource CardBgBrush}"
+                    BorderBrush="{StaticResource BorderSubtleBrush}"
+                    BorderThickness="1"
+                    CornerRadius="10"
+                    Padding="12,10">
+                <WrapPanel>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,8,8">
+                        <Button Content="This month" Style="{StaticResource PillButton}" Command="{Binding SetPresetCommand}" CommandParameter="This month" Height="36" Margin="0,0,6,0" />
+                        <Button Content="Last month" Style="{StaticResource PillButton}" Command="{Binding SetPresetCommand}" CommandParameter="Last month" Height="36" Margin="0,0,6,0" />
+                        <Button Content="Last 3 months" Style="{StaticResource PillButton}" Command="{Binding SetPresetCommand}" CommandParameter="Last 3 months" Height="36" Margin="0,0,6,0" />
+                        <Button Content="This year" Style="{StaticResource PillButton}" Command="{Binding SetPresetCommand}" CommandParameter="This year" Height="36" Margin="0,0,6,0" />
+                        <Button Content="Custom" Style="{StaticResource PillButton}" Command="{Binding SetPresetCommand}" CommandParameter="Custom" Height="36" />
+                    </StackPanel>
+
+                    <DatePicker Width="142"
+                                Style="{StaticResource DarkDatePicker}"
+                                SelectedDate="{Binding FromDate}"
+                                Height="36"
+                                Margin="0,0,8,8" />
+
+                    <DatePicker Width="142"
+                                Style="{StaticResource DarkDatePicker}"
+                                SelectedDate="{Binding ToDate}"
+                                Height="36"
+                                Margin="0,0,8,8" />
+
+                    <ComboBox Width="180"
+                              Style="{StaticResource DarkComboBox}"
+                              ItemsSource="{Binding AccountFilters}"
+                              Text="{Binding SelectedAccountsText}"
+                              Height="36"
+                              MaxDropDownHeight="220"
+                              Margin="0,0,8,8">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <CheckBox Style="{StaticResource DarkCheckBox}"
+                                          Content="{Binding Name}"
+                                          IsChecked="{Binding IsSelected, Mode=OneWay}"
+                                          Command="{Binding DataContext.ToggleAccountCommand, RelativeSource={RelativeSource AncestorType=ComboBox}}"
+                                          CommandParameter="{Binding}" />
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Style="{StaticResource AccentButton}"
+                                Command="{Binding ExportPdfCommand}"
+                                Height="36"
+                                Margin="0,0,8,0">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE8A5;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Margin="0,0,7,0" />
+                                <TextBlock Text="Export PDF" />
+                            </StackPanel>
+                        </Button>
+                        <Button Style="{StaticResource DarkButton}"
+                                Command="{Binding ExportCsvCommand}"
+                                Height="36">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE8AD;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" Margin="0,0,7,0" />
+                                <TextBlock Text="Export CSV" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </WrapPanel>
+            </Border>
+
+            <Grid Grid.Row="6">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="38*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="37*" />
+                    <ColumnDefinition Width="14" />
+                    <ColumnDefinition Width="25*" />
+                </Grid.ColumnDefinitions>
+
+                <Border Style="{StaticResource BaseCard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Top categories" FontSize="13" Foreground="{StaticResource TextMutedBrush}" />
+                        <lvc:CartesianChart Grid.Row="1"
+                                            Series="{Binding TopCategorySeries}"
+                                            XAxes="{Binding TopCategoryXAxes}"
+                                            YAxes="{Binding TopCategoryYAxes}"
+                                            LegendPosition="Hidden"
+                                            TooltipPosition="Top"
+                                            AnimationsSpeed="00:00:00.800"
+                                            Background="Transparent"
+                                            Margin="0,8,0,0" />
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="2" Style="{StaticResource BaseCard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="10" />
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Weekly activity heatmap" FontSize="13" Foreground="{StaticResource TextMutedBrush}" />
+                        <Grid Grid.Row="2" Margin="72,0,0,0" Height="18">
+                            <ItemsControl ItemsSource="{Binding HeatmapColumns}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="12" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding Label}"
+                                                   Foreground="{StaticResource TextMutedBrush}"
+                                                   FontSize="9"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   HorizontalAlignment="Center" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+
+                        <Grid Grid.Row="3">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="72" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <ItemsControl ItemsSource="{Binding HeatmapRows}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Rows="6" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}"
+                                                   Foreground="{StaticResource TextMutedBrush}"
+                                                   FontSize="11"
+                                                   VerticalAlignment="Center" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <ItemsControl Grid.Column="1" ItemsSource="{Binding HeatmapCells}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <UniformGrid Columns="12" Rows="6" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border Width="26"
+                                                Height="26"
+                                                CornerRadius="4"
+                                                Background="{Binding Fill}"
+                                                BorderBrush="{StaticResource BorderSubtleBrush}"
+                                                BorderThickness="1"
+                                                ToolTip="{Binding Tooltip}" />
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </Grid>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="4" Style="{StaticResource BaseCard}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="Status overview" FontSize="13" Foreground="{StaticResource TextMutedBrush}" />
+                        <Grid Grid.Row="1">
+                            <lvc:PieChart Series="{Binding StatusGaugeSeries}"
+                                          LegendPosition="Hidden"
+                                          TooltipPosition="Top"
+                                          InitialRotation="-90"
+                                          AnimationsSpeed="00:00:00.800"
+                                          Background="Transparent"
+                                          Margin="0,8,0,0" />
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding TransactionCountText}"
+                                           Foreground="{StaticResource TextPrimaryBrush}"
+                                           FontSize="22"
+                                           FontWeight="Bold"
+                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="transactions"
+                                           Foreground="{StaticResource TextMutedBrush}"
+                                           FontSize="11"
+                                           HorizontalAlignment="Center" />
+                            </StackPanel>
+                        </Grid>
+                        <ItemsControl Grid.Row="2" ItemsSource="{Binding StatusLegend}" Margin="0,8,0,0">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,4">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="16" />
+                                            <ColumnDefinition />
+                                            <ColumnDefinition Width="Auto" />
+                                        </Grid.ColumnDefinitions>
+                                        <Ellipse Width="8" Height="8" Fill="{Binding Brush}" VerticalAlignment="Center" />
+                                        <TextBlock Grid.Column="1" Text="{Binding Label}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="12" />
+                                        <TextBlock Grid.Column="2" Text="{Binding Count}" Foreground="{StaticResource TextMutedBrush}" FontSize="12" HorizontalAlignment="Right" />
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+            </Grid>
+
+            <Border Grid.Row="8" Style="{StaticResource BaseCard}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="12" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <TextBlock Text="Flagged transactions"
+                               Foreground="{StaticResource TextPrimaryBrush}"
+                               FontSize="15"
+                               FontWeight="SemiBold" />
+
+                    <DataGrid Grid.Row="2"
+                              Style="{StaticResource DarkDataGrid}"
+                              ItemsSource="{Binding FlaggedTransactions}"
+                              AutoGenerateColumns="False"
+                              HeadersVisibility="Column"
+                              CanUserAddRows="False"
+                              CanUserDeleteRows="False"
+                              CanUserResizeRows="False"
+                              CanUserSortColumns="False"
+                              SelectionMode="Single"
+                              RowHeight="46"
+                              ColumnHeaderHeight="34"
+                              GridLinesVisibility="None"
+                              BorderThickness="0"
+                              Background="Transparent"
+                              RowHeaderWidth="0"
+                              RowStyle="{StaticResource ReportGridRow}"
+                              CellStyle="{StaticResource ReportGridCell}">
+                        <DataGrid.ColumnHeaderStyle>
+                            <Style TargetType="{x:Type DataGridColumnHeader}">
+                                <Setter Property="Background" Value="{StaticResource SurfaceBrush}" />
+                                <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+                                <Setter Property="BorderThickness" Value="0" />
+                                <Setter Property="Padding" Value="8,0" />
+                                <Setter Property="FontSize" Value="11" />
+                                <Setter Property="FontWeight" Value="SemiBold" />
+                            </Style>
+                        </DataGrid.ColumnHeaderStyle>
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="DATE" Binding="{Binding DateText}" Width="90" IsReadOnly="True" />
+                            <DataGridTextColumn Header="DESCRIPTION" Binding="{Binding Description}" Width="*" IsReadOnly="True" />
+                            <DataGridTextColumn Header="ACCOUNT" Binding="{Binding AccountName}" Width="120" IsReadOnly="True" />
+                            <DataGridTextColumn Header="CATEGORY" Binding="{Binding CategoryName}" Width="130" IsReadOnly="True" />
+                            <DataGridTextColumn Header="AMOUNT" Binding="{Binding AmountText}" Width="110" IsReadOnly="True" />
+                            <DataGridTemplateColumn Header="STATUS" Width="130">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border Background="{Binding StatusBrush}" CornerRadius="10" Padding="8,3" HorizontalAlignment="Left">
+                                            <TextBlock Text="{Binding Status}" Foreground="{StaticResource WhiteBrush}" FontSize="11" FontWeight="SemiBold" />
+                                        </Border>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</UserControl>
