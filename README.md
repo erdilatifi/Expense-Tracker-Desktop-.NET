@@ -1,4 +1,4 @@
-# 💸 FinanceTracker
+# FinanceTracker
 
 A polished, dark-themed **personal finance desktop app** built with WPF (.NET 8) and SQLite. Track transactions, budgets, recurring rules, accounts, and generate detailed financial reports — all locally, no cloud required.
 
@@ -8,16 +8,16 @@ A polished, dark-themed **personal finance desktop app** built with WPF (.NET 8)
 
 ---
 
-## ✨ Features
+## Features
 
-### 🏠 Dashboard
+### Dashboard
 - Animated KPI cards: Net Worth, Monthly Income, Monthly Expenses, Savings Rate
 - Live donut chart for spending breakdown by category
 - Monthly cash-flow bar chart (income vs. expenses vs. savings)
 - Recent transactions list with category icons and color-coded amounts
 - Month-over-month change indicators (↑ ↓)
 
-### 💳 Transactions
+### Transactions
 - Full transaction list with search, category filter, date filter, and type filter
 - Add / Edit / Delete transactions with an animated modal dialog
 - Mark transactions as recurring directly from the list
@@ -25,19 +25,19 @@ A polished, dark-themed **personal finance desktop app** built with WPF (.NET 8)
 - **Ctrl+N** to open the Add Transaction dialog from anywhere
 - **Ctrl+E** to export the current filtered view to CSV
 
-### 🔁 Recurring Rules
+### Recurring Rules
 - Create recurring income or expense rules (Daily / Weekly / Monthly / Yearly)
 - Pause / resume individual rules
 - Automatic transaction generation on app startup for all due rules
 - Toast notification + notification center entry when recurring transactions fire
 
-### 📊 Budgets
+###  Budgets
 - Monthly budget limits per spending category
 - Visual progress bars with colour-coded risk levels (safe / warning / over-budget)
 - Budget alert notifications when 80 % or 100 % of a limit is hit
 - Month navigator to review historical budget performance
 
-### 📈 Reports
+### Reports
 - **Top Categories** horizontal bar chart (single-month) or stacked monthly chart (multi-month)
 - **12-week activity heatmap** by category — always shows the last 12 weeks regardless of the date filter
 - Transaction status gauge (Open / Reviewing / Cleared)
@@ -47,14 +47,14 @@ A polished, dark-themed **personal finance desktop app** built with WPF (.NET 8)
 - Export full report to **PDF** (QuestPDF) or **CSV**
 - Account filter and preset date ranges: This Month / Last Month / Last 3 Months / This Year
 
-### 🏦 Accounts
+###  Accounts
 - Account cards with current balance, account type badge, and accent colour
 - Sparkline mini-chart per account showing 30-day balance trend
 - Recent activity list per account
 - Add / Edit / Delete accounts (Checking, Savings, Credit Card, Investment, Cash)
 - Multi-currency support (USD, EUR, GBP, CAD, AUD, JPY, CHF) with live conversion to base currency
 
-### ⚙️ Settings
+###  Settings
 - **Appearance**: accent colour picker, font size, dark mode toggle
 - **Regional**: currency, date format, first day of week
 - **Data**: CSV import preview, backup database, restore database
@@ -63,7 +63,7 @@ A polished, dark-themed **personal finance desktop app** built with WPF (.NET 8)
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -77,7 +77,7 @@ A polished, dark-themed **personal finance desktop app** built with WPF (.NET 8)
 
 ---
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Requirements
 - Windows 10 / 11
@@ -101,7 +101,7 @@ dotnet publish FinanceTracker\FinanceTracker.csproj -c Release -r win-x64 --self
 
 ---
 
-## ⌨️ Keyboard Shortcuts
+##  Keyboard Shortcuts
 
 | Shortcut | Action |
 |---|---|
@@ -118,7 +118,7 @@ dotnet publish FinanceTracker\FinanceTracker.csproj -c Release -r win-x64 --self
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 FinanceTracker/
@@ -167,6 +167,6 @@ FinanceTracker/
 
 ---
 
-## 📝 License
+##  License
 
 MIT — free to use, modify, and distribute.
